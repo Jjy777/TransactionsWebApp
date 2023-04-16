@@ -12,6 +12,7 @@ using System.Globalization;
 using static System.Net.Mime.MediaTypeNames;
 using System.IO;
 using System.Text;
+using Microsoft.VisualBasic.FileIO;
 
 namespace TransactionsWebApp.Pages
 {
@@ -56,17 +57,15 @@ namespace TransactionsWebApp.Pages
                     {
                         if (strExtension == ".xml" || strExtension == ".csv")
                         {
-                            List<Transactions> tList = new List<Transactions>();
-                            var stream = file.OpenReadStream();
-                            var Content = "";
-                            using (var streamReader = new StreamReader(stream, Encoding.UTF8))
-                            {
-                                Content = streamReader.ReadToEnd();
-                            }
-                            if (strExtension == ".xml")
-                            {
-                                try
+                            try{
+                                List<Transactions> tList = new List<Transactions>();
+                                var stream = file.OpenReadStream();
+                                var Content = "";
+                                using (var streamReader = new StreamReader(stream, Encoding.UTF8))
                                 {
+                                    Content = streamReader.ReadToEnd();
+                                }
+                                if (strExtension == ".xml"){
 
                                     //Load the XML in XmlDocument.                                 
                                     XmlDocument doc = new XmlDocument();
@@ -113,26 +112,90 @@ namespace TransactionsWebApp.Pages
                                         {
                                             throw new Exception();
                                         }
+                                    }                              
+                                }
+                                else{
 
+                                    //Loop through the rows.
+                                    foreach (string row in Content.Split('\n'))
+                                    {
+                                        Transactions t = new Transactions();
+                                        string statusReplaced ="" ;
+
+                                        if (!string.IsNullOrEmpty(row))
+                                        {
+                                            //Execute a loop over the columns.
+                                            int i = 0;
+                                            TextFieldParser parser = new TextFieldParser(new StringReader(row));
+                                            parser.HasFieldsEnclosedInQuotes = true;
+                                            parser.SetDelimiters(",");
+                                            string[] fields;
+
+                                            while (!parser.EndOfData)
+                                            {
+                                                fields = parser.ReadFields();
+                                                foreach (string field in fields)
+                                                {
+                                                    if (i == 0)
+                                                    {
+                                                        t.TransactionID = field;
+                                                    }
+                                                    else if (i == 1)
+                                                    {
+                                                        t.Amount = decimal.Parse(field);
+                                                    }
+                                                    else if (i == 2)
+                                                    {
+                                                        t.CurrencyCode = field;
+                                                    }
+                                                    else if (i == 3)
+                                                    {
+                                                        t.TransactionDate = DateTime.ParseExact(field, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+                                                    }
+                                                    else if (i == 4)
+                                                    {
+
+                                                        if (field == "Approved")
+                                                        {
+                                                            statusReplaced = "A";
+                                                        }
+                                                        else if (field == "Failed")
+                                                        {
+                                                            statusReplaced = "R";
+                                                        }
+                                                        else if (field == "Finished")
+                                                        {
+                                                            statusReplaced = "D";
+                                                        }
+                                                        t.Status = statusReplaced;
+                                                    }
+                                                    i++;
+                                                }
+                                            }
+
+                                            parser.Close();                                           
+                                            t.CreatedDate = DateTime.Now;
+                                            tList.Add(t);
+                                        }
+                                        else
+                                        {
+                                            throw new Exception();
+                                        }
+
+                                    }
+                              
+                                }
+                                if (tList.Count>0) {
+                                    foreach (Transactions t in tList) {
+                                        _db.Transactions.Add(t);
+                                        _db.SaveChangesAsync();
                                     }
 
                                 }
-                                catch (Exception e)
-                                {
-                                    return BadRequest("Record Invalid");
-                                }
-                            }
-                            else {
-                                try
-                                {
 
-                                   
-
-                                }
-                                catch (Exception e)
-                                {
-                                    return BadRequest("Record Invalid");
-                                }
+                            }catch (Exception e)
+                            {
+                                return BadRequest("Record Invalid");
                             }
                             return new OkResult();
 
@@ -154,18 +217,7 @@ namespace TransactionsWebApp.Pages
             }
             return Page();
         }
-        public static async Task<string> ReadFormFileAsync(IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-            {
-                return await Task.FromResult((string)null);
-            }
-
-            using (var reader = new StreamReader(file.OpenReadStream()))
-            {
-                return await reader.ReadToEndAsync();
-            }
-        }
+       
 
     }
 }
