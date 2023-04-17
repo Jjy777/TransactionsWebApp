@@ -239,7 +239,7 @@ namespace TransactionsWebApp.Pages
             {
                 EndDt = Convert.ToDateTime(end);
             }
-
+            // Filter data based on parameters
             List<OutPutTransaction> transactions = await _db.Transactions.Where(
                 table => (String.IsNullOrEmpty(status) ? true : table.Status.ToLower() == status.ToLower())
                     && (String.IsNullOrEmpty(currency) ? true : table.CurrencyCode.ToLower() == currency.ToLower())
