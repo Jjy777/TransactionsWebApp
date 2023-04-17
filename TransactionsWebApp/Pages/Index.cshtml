@@ -95,17 +95,12 @@
             var startdate = $('#startInput').val();
             var enddate = $('#endInput').val();
             let options = {
-                method: 'POST',
+                method: 'GET',
                 headers: { accept: 'application/json', 'content-type': 'application/json' },
-                body: JSON.stringify({
-                    start: startdate,
-                    end: enddate,
-                    currency : currencyCode,
-                    status : statusval
-                }),
+                
             };
 
-        fetch(apifunc, options).then(response => response.text())
+        fetch(apifunc+'?status='+statusval+'&currency='+currencyCode+'&start='+startdate+'&end='+enddate, options).then(response => response.text())
             .then(text => $('#resultTxt').text(text))
 
         }

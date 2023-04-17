@@ -228,7 +228,7 @@ namespace TransactionsWebApp.Pages
             return Page();
         }
 
-        [HttpPost("GetTransactionsByValues")]
+        [HttpGet("GetTransactionsByValues")]
         public async Task<List<OutPutTransaction>> GetTransactionsByValues(string start,string end,string currency,string status)
         {
             DateTime StartDt = DateTime.Now;DateTime EndDt = DateTime.Now;
