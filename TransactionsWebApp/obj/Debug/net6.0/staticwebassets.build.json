@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "llFQRJZbim2+Kx5qF8RnOaFcYE/0W12X8poQt9DE0HA=",
+  "Hash": "XzP1HQ1lKSFGrdefsYlSiNJIRC64E9kkM9/PtiByCLU=",
   "Source": "TransactionsWebApp",
   "BasePath": "_content/TransactionsWebApp",
   "Mode": "Default",
@@ -66,6 +66,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\site.css"
+    },
+    {
+      "Identity": "C:\\Users\\User\\source\\repos\\TransactionsWebApp\\TransactionsWebApp\\wwwroot\\dbscript\\CreateDBandTable.sql",
+      "SourceId": "TransactionsWebApp",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\User\\source\\repos\\TransactionsWebApp\\TransactionsWebApp\\wwwroot\\",
+      "BasePath": "_content/TransactionsWebApp",
+      "RelativePath": "dbscript/CreateDBandTable.sql",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\dbscript\\CreateDBandTable.sql"
     },
     {
       "Identity": "C:\\Users\\User\\source\\repos\\TransactionsWebApp\\TransactionsWebApp\\wwwroot\\favicon.ico",

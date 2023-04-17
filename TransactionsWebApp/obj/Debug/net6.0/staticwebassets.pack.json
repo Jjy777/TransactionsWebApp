@@ -9,6 +9,10 @@
       "PackagePath": "staticwebassets\\css\\site.css"
     },
     {
+      "Id": "C:\\Users\\User\\source\\repos\\TransactionsWebApp\\TransactionsWebApp\\wwwroot\\dbscript\\CreateDBandTable.sql",
+      "PackagePath": "staticwebassets\\dbscript\\CreateDBandTable.sql"
+    },
+    {
       "Id": "C:\\Users\\User\\source\\repos\\TransactionsWebApp\\TransactionsWebApp\\wwwroot\\favicon.ico",
       "PackagePath": "staticwebassets\\favicon.ico"
     },

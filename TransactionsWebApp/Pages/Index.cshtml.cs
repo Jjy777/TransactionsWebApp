@@ -1,18 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
-
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic.FileIO;
+using System.Globalization;
+using System.Text;
 using System.Xml;
-using System.Xml.Linq;
-using System.Xml.Serialization;
+using System.Linq;
 using TransactionsWebApp.Data;
 using TransactionsWebApp.Model;
-using System.Transactions;
-using System.Globalization;
-using static System.Net.Mime.MediaTypeNames;
-using System.IO;
-using System.Text;
-using Microsoft.VisualBasic.FileIO;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace TransactionsWebApp.Pages
 {
@@ -23,7 +19,10 @@ namespace TransactionsWebApp.Pages
         private IHostingEnvironment _environment;
 
         private readonly int _maxFileSize = 220000 ;
-            /*1 * 1024 * 1024;*/
+        /*1 * 1024 * 1024;*/
+
+        [BindProperty]
+        public DateTime DateTime { get; set; }
 
         public IEnumerable<Transactions> Transactions { get; set; }
         public IndexModel(ILogger<IndexModel> logger, ApplicationDbContext db, IHostingEnvironment environment)
@@ -57,10 +56,13 @@ namespace TransactionsWebApp.Pages
                     {
                         if (strExtension == ".xml" || strExtension == ".csv")
                         {
-                            try{
+                            HistoryLog h = new HistoryLog();
+                            try
+                            {
                                 List<Transactions> tList = new List<Transactions>();
                                 var stream = file.OpenReadStream();
                                 var Content = "";
+                               
                                 using (var streamReader = new StreamReader(stream, Encoding.UTF8))
                                 {
                                     Content = streamReader.ReadToEnd();
@@ -190,11 +192,19 @@ namespace TransactionsWebApp.Pages
                                         _db.Transactions.Add(t);
                                         _db.SaveChangesAsync();
                                     }
+                                  
 
                                 }
+                               
 
-                            }catch (Exception e)
+                            }
+                            catch (Exception e)
                             {
+                                h.Description = strFileName + " has invalid content.";
+                                h.Status = "Failed";
+                                h.CreatedDate = DateTime.Now;
+                                _db.HistoryLog.Add(h);
+                                _db.SaveChangesAsync();
                                 return BadRequest("Record Invalid");
                             }
                             return new OkResult();
@@ -217,7 +227,33 @@ namespace TransactionsWebApp.Pages
             }
             return Page();
         }
-       
 
+        [HttpPost("GetTransactionsByValues")]
+        public async Task<List<OutPutTransaction>> GetTransactionsByValues(string start,string end,string currency,string status)
+        {
+            DateTime StartDt = DateTime.Now;DateTime EndDt = DateTime.Now;
+            if (!String.IsNullOrEmpty(start)) {
+                StartDt = Convert.ToDateTime(start);
+            }
+            if (!String.IsNullOrEmpty(end))
+            {
+                EndDt = Convert.ToDateTime(end);
+            }
+
+            List<OutPutTransaction> transactions = await _db.Transactions.Where(
+                table => (String.IsNullOrEmpty(status) ? true : table.Status.ToLower() == status.ToLower())
+                    && (String.IsNullOrEmpty(currency) ? true : table.CurrencyCode.ToLower() == currency.ToLower())
+                    && (String.IsNullOrEmpty(start) ? true : table.TransactionDate >= StartDt)
+                    && (String.IsNullOrEmpty(end) ? true : table.TransactionDate <= EndDt)
+                ).Select(t => new OutPutTransaction()
+                {
+                    TransactionID = t.TransactionID,
+                    Payment = String.Format("{0:###0.00}", t.Amount)+" "+t.CurrencyCode,
+                    Status = t.Status
+                }).ToListAsync();
+           
+                return transactions;
+            
+        }
     }
 }

@@ -14,4 +14,11 @@ namespace TransactionsWebApp.Model
         public DateTime TransactionDate { get; set; }
         public DateTime CreatedDate { get; set; }
     }
+    public class OutPutTransaction
+    {  
+        public string TransactionID { get; set; }
+        public string Payment { get; set; }
+        public string Status { get; set; }
+
+    }
 }

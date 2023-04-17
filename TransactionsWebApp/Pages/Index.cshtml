@@ -4,6 +4,7 @@
     ViewData["Title"] = "Home page";
 }
 
+
 <div class="text-center">
   @*  <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>*@
@@ -36,37 +37,80 @@
         </div>
     </div>
     <br />
+    <br />
     <div>
-        <table class="table table-bordered table-striped" width="100%" >
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Payment</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var obj in Model.Transactions)
-                {
-                    <tr>
-                        <td width="30%">@obj.TransactionID</td>
-                        <td width="50%">@String.Format("{0:#,##0.00}",@obj.Amount) @obj.CurrencyCode</td>
-                        <td width="10%">@obj.Status</td>
-                    </tr>
-                    
-                }
-            </tbody>
-        </table>
+        <div class="row pt-4">
+            <div class="col-2">
+                <p class="text-secondary">Status</p>
+            </div>
+            <div class="col-8">
+            <input type="text" autocomplete="off" id="statusInput"/>
+            </div>
+        </div>
+        <div class="row pt-4">
+            <div class="col-2">
+                <p class="text-secondary">Currency</p>
+            </div>
+            <div class="col-8">
+                <input type="text" autocomplete="off" id="CcodeInput" />
+            </div>
+        </div>
+        <div class="row pt-4">
+            <div class="col-2">
+                <p class="text-secondary">Start Date</p>
+            </div>
+            <div class="col-3">
+                <input class="form-control" asp-for="DateTime" value="" id="startInput" />
+            </div>
+            -
+            <div class="col-2">
+                <p class="text-secondary">End Date</p>
+            </div>
+            <div class="col-3">
+                <input class="form-control" asp-for="DateTime" value="" id="endInput" />
+            </div>
+        </div>
+        <br />
+        <div>
+        <input type="button" class="btn btn-primary" value="Search" id="Searchbtn" />
+        </div>
+        <br />
+        <div>
+            <div>
+                <p class="text-secondary">Result</p>
+            </div>
+            <div class ="row pt-4">
+                <span id="resultTxt"> </span>
+            </div>
+        
+        </div>
+       
     </div>
+  
 </div>
-<script>
-    //var uploadField = document.getElementById("fileInput");
-    //var maxFileSize = 1024;
+<script type="text/javascript">
 
-    //uploadField.onchange = function () {
-    //    if (this.files[0].size > maxFileSize) {
-    //        alert("Maximum allowed file size is 1 MB.");
-    //        this.value = "";
-    //    };
-    
+        var apifunc = 'GetTransactionsByValues';
+        document.getElementById("Searchbtn").onclick = function () {
+            var statusval = $('#statusInput').val();
+        alert(statusval);
+            var currencyCode = $('#CcodeInput').val();
+            var startdate = $('#startInput').val();
+            var enddate = $('#endInput').val();
+            let options = {
+                method: 'POST',
+                headers: { accept: 'application/json', 'content-type': 'application/json' },
+                body: JSON.stringify({
+                    start: startdate,
+                    end: enddate,
+                    currency : currencyCode,
+                    status : statusval
+                }),
+            };
+
+        fetch(apifunc, options).then(response => response.text())
+            .then(text => $('#resultTxt').text(text))
+
+        }
 </script>
+

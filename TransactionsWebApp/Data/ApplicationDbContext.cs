@@ -9,6 +9,7 @@ namespace TransactionsWebApp.Data
         { 
         } 
         public DbSet<Transactions> Transactions { get; set; }
+        public DbSet<HistoryLog> HistoryLog { get; set; }
 
     }
 }
